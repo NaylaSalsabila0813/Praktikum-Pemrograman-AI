@@ -1,0 +1,185 @@
+from os import system, name
+
+line = "------------------------"
+
+# clear screen
+def clear():
+    if name == 'nt':  # Windows
+        _ = system("cls")
+    else:             # Mac / Linux
+        _ = system("clear")
+
+# tampilkan data buku
+def show_data():
+    clear()
+    print(line + " [DATA BUKU] " + line)
+    print("____ ______________")
+    print(" No |  Judul Buku  ")
+    print("____|______________")
+
+    f = open("databuku.txt", "r")
+    isi = f.readlines()
+    f.close()
+
+    isi.sort()
+
+    if len(isi) == 0:
+        print("\nBelum ada data buku yang masuk")
+    else:
+        i = 1
+        for x in isi:
+            pecah = x.strip().split(",")
+            if pecah[0] != "":
+                print(f" {i}. | {pecah[0]}")
+                i += 1
+    back_to_menu()
+
+# masukkan data buku
+def insert_data():
+    buku_baru = input("Masukkan Judul Buku: ")
+
+    f = open("databuku.txt", "a")
+    f.writelines(buku_baru + ",\n")
+    f.close()
+
+    print(f"Buku '{buku_baru}' berhasil ditambahkan")
+
+    tanya = input("Mau isi lagi? (y/t) : ")
+    if tanya.lower() == "y":
+        insert_data()
+    else:
+        back_to_menu()
+
+# cari data buku
+def search_data():
+    search = input("Masukkan judul buku yang ingin dicari : ")
+    f = open("databuku.txt", "r")
+    isi = f.readlines()
+    f.close()
+
+    ditemukan = False
+    for x in isi:
+        xp = x.split(",")
+        if xp[0].lower() == search.lower():
+            print(f"Buku '{search}' ditemukan!")
+            ditemukan = True
+
+    if not ditemukan:
+        print("Data buku tidak ditemukan")
+
+    back_to_menu()
+
+# edit data buku
+def edit_data():
+    ubah_nama = input("Masukkan judul buku yang ingin diupdate : ")
+    judul_baru = input("Masukkan judul buku baru               : ")
+
+    f = open("databuku.txt", "r")
+    isi = f.readlines()
+    f.close()
+
+    ada = False
+    for i in range(len(isi)):
+        xp = isi[i].split(",")
+        if xp[0].lower() == ubah_nama.lower():
+            isi[i] = judul_baru + ",\n"
+            ada = True
+            break
+
+    f = open("databuku.txt", "w")
+    f.writelines(isi)
+    f.close()
+
+    if ada:
+        print(f"Buku '{ubah_nama}' berhasil diupdate menjadi '{judul_baru}'")
+    else:
+        print("Judul buku tidak ditemukan")
+
+    back_to_menu()
+
+# hapus data buku
+def delete_data():
+    hapus_nama = input("Masukkan judul buku yang ingin dihapus: ")
+
+    f = open("databuku.txt", "r")
+    isi = f.readlines()
+    f.close()
+
+    ada = False
+    new_data = []
+
+    for x in isi:
+        xp = x.split(",")
+        if xp[0].lower() != hapus_nama.lower():
+            new_data.append(x)
+        else:
+            ada = True
+
+    f = open("databuku.txt", "w")
+    f.writelines(new_data)
+    f.close()
+
+    if ada:
+        print(f"Buku '{hapus_nama}' telah dihapus")
+    else:
+        print("Judul buku tidak ditemukan")
+
+    back_to_menu()
+
+# hapus semua data
+def delete_all():
+    confirm = input("Apakah kamu yakin akan menghapus semua data buku? (y/t) : ")
+
+    if confirm.lower() == 'y':
+        open("databuku.txt", "w").close()
+        print("Semua data buku berhasil dihapus")
+    back_to_menu()
+
+menus = [
+    "[1] Masukkan Data Buku",
+    "[2] Tampilkan Data Buku",
+    "[3] Cari Buku",
+    "[4] Update Data Buku",
+    "[5] Hapus Buku",
+    "[6] Hapus Semua Data Buku",
+    "[7] Exit"
+]
+
+def show_menu():
+    clear()
+    print(line*3)
+    print("     PROGRAM DATA BUKU SEDERHANA")
+    print(line*3)
+    print("\n======== MENU ========")
+
+    for i in menus:
+        print(i)
+
+    selected_menu = input("Pilih menu > ")
+    print("\n")
+
+    if selected_menu == "1":
+        insert_data()
+    elif selected_menu == "2":
+        show_data()
+    elif selected_menu == "3":
+        search_data()
+    elif selected_menu == "4":
+        edit_data()
+    elif selected_menu == "5":
+        delete_data()
+    elif selected_menu == "6":
+        delete_all()
+    elif selected_menu == "7":
+        exit()
+    else:
+        print("Masukkan pilihan sesuai nomor menu")
+        back_to_menu()
+
+def back_to_menu():
+    print("\n")
+    input("Tekan Enter untuk kembali...")
+    show_menu()
+
+# start program
+show_menu()
